@@ -13,7 +13,7 @@
   <img src="https://user-images.githubusercontent.com/127735039/227967460-af11e488-f9a9-4996-affa-76c6c686d11b.PNG">
 </p>
 
-## 
+## 챌린지
 <p align="center">
   <img src="https://user-images.githubusercontent.com/127735039/227967474-85dc4d91-bdec-4b32-aea2-a1d6f4a71ee3.PNG">
 </p>
