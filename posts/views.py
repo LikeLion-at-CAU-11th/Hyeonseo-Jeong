@@ -186,29 +186,95 @@ def create_comment(request, post_id):
     })
 
 
-# 아래는 삭제
-@require_http_methods(["POST"])
-def create_post(request):
-    # 데이터는 주로 body
-    body = json.loads(request.body.decode('utf-8'))
+# DRF(Django REST Framework)
+from .serializers import PostSerializer, CommentSerializer
 
-    # ORM을 통해 새로운 데이터를 DB에 생성함
-    new_post = Post.objects.create(
-        writer = body['writer'],
-        content = body['content'],
-        category = body['category']
-    )
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework import status   # 상태 코드를 넘겨줌
+from django.http import Http404
 
-    # Response에서 보여질 데이터 내용을 Json 형태로 만듦
-    new_post_json = {
-        "id": new_post.post_id,
-        "writer": new_post.writer,
-        "content": new_post.content,
-        "category": new_post.category,
-    }
+class PostList(APIView):
+    # Create: 게시글 작성하기
+    def post(self, request, format=None):
+        # request.data를 이용하여 PostSerializer 인스턴스 생성
+        serializer = PostSerializer(data=request.data)
 
-    return JsonResponse({
-        'status': 200,
-        'message': '게시글 목록 조회 성공',
-        'data': new_post_json
-    })
+        # 데이터 유효성 검사 및 저장
+        if serializer.is_vaild():
+            serializer.save()
+
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        
+        # 데이터가 유효하지 않다면, serializer.errors를 이용하여 에러 정보 반환
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+    # Read: 게시글 불러오기
+    def get(self, request, format=None):
+        posts = Post.objects.all()  # DB에서 모든 Post 객체를 QuerySet 객체로 받아 옴
+        serializer = PostSerializer(posts, many=True)   # Post 객체 직렬화(many=True: 여러 개의 객체 직렬화)
+
+        return Response(serializer.data)
+    
+class PostDetail(APIView):
+    # Read: 게시글 불러오기    
+    def get(self, request, id):
+        post = get_object_or_404(Post, post_id=id)   # 해당 id를 갖는 게시물에 대한 객체 반환(없다면 에러 반환)
+        serializer = PostSerializer(post)   # 찾은 객체를 직렬화
+
+        return Response(serializer.data)
+    
+    # Update: 게시글 수정하기
+    def put(self, request, id): # put은 게시물 전체 정보를 포함해야 함(일부라면 patch)
+        post = get_object_or_404(Post, post_id=id)
+        serializer = PostSerializer(post, data=request.data)
+
+        if serializer.is_valid():
+            serializer.save()
+
+            return Response(serializer.data)
+        
+    # Delete: 게시글 삭제하기    
+    def delete(self, request, id):
+        post = get_object_or_404(Post, post_id=id)   # 해당 id를 갖는 게시물에 대한 객체 반환(없다면 에러 반환)
+        
+        post.delete()
+
+        return Response(status=status.HTTP_204_NO_CONTENT)  # 삭제 후 HTTP_204_NO_CONTENT 상태 코드만 반환
+    
+
+class CommentList(APIView):
+    def post(self, request, format=None):
+        serializer = CommentSerializer(data=request.data)
+
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def get(self, request, format=None):
+        comments = Comment.objects.all()
+        serializer = CommentSerializer(comments, many=True)
+        return Response(serializer.data)
+
+class CommentDetail(APIView):
+    def get(self, request, id):
+        comment = get_object_or_404(Comment, id=id)
+        serializer = CommentSerializer(comment)
+        return Response(serializer.data)
+
+    def put(self, request, id):
+        comment = get_object_or_404(Comment, id=id)
+        serializer = CommentSerializer(comment, data=request.data)
+
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def delete(self, request, id):
+        comment = get_object_or_404(Comment, id=id)
+        comment.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)

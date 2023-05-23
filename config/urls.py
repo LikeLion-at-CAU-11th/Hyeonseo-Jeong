@@ -21,5 +21,5 @@ from django.conf.urls.static import static
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('posts/', include('posts.urls')),  # posts/ 추가 -> ~/post/1 이렇게 RestFul!
+    path('', include('posts.urls')),  # posts/ 추가 -> ~/post/1 이렇게 RestFul!
 ]
