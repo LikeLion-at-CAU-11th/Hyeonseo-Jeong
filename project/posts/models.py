@@ -17,7 +17,7 @@ class Post(BaseModel):
         ('ETC', '기타')
     )
 
-    post_id = models.AutoField(primary_key=True)
+    id = models.AutoField(primary_key=True)
     writer = models.CharField(verbose_name="작성자", max_length=30)
     content = models.TextField(verbose_name="내용")
     category = models.CharField(choices=CHOICES, max_length=20)
@@ -26,4 +26,4 @@ class Post(BaseModel):
 class Comment(BaseModel):
     writer = models.CharField(verbose_name="작성자", max_length=30)
     content = models.CharField(verbose_name="내용", max_length=200)
-    post = models.ForeignKey(to=Post, on_delete=models.CASCADE, blank=False)
+    post = models.ForeignKey(to=Post, on_delete=models.CASCADE, blank=False)    
