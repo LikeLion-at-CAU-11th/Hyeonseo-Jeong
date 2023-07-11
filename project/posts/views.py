@@ -192,8 +192,12 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from django.http import Http404
+from rest_framework.permissions import IsAuthenticatedOrReadOnly
+
 
 class PostList(APIView):
+    permission_classes = [IsAuthenticatedOrReadOnly]
+
     # Create: 게시글 작성하기
     def post(self, request, format=None):
         serializer = PostSerializer(data=request.data)
@@ -210,7 +214,7 @@ class PostList(APIView):
 
         serializer = PostSerializer(posts, many=True)
 
-        return Response(serializer.data)
+        return Response(serializer.data)       
     
 class PostDetail(APIView):
     def get(self,request, id):
