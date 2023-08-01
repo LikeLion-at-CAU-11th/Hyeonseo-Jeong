@@ -41,7 +41,9 @@ SECRET_KEY = get_secret("SECRET_KEY")
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    "*",    # 모든 HOST에게 허용
+]
 
 # Application definition
 
@@ -62,6 +64,7 @@ PROJECT_APPS = [
 ]
 
 THIRD_PARTY_APPS = [
+    'corsheaders',    
     'rest_framework',
     'rest_framework_simplejwt',
 
