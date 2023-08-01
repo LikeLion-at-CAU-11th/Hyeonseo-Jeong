@@ -21,7 +21,7 @@ class Post(BaseModel):
     writer = models.CharField(verbose_name="작성자", max_length=30)
     content = models.TextField(verbose_name="내용")
     category = models.CharField(choices=CHOICES, max_length=20)
- 
+    thumbnail = models.ImageField(verbose_name="이미지")
 
 class Comment(BaseModel):
     writer = models.CharField(verbose_name="작성자", max_length=30)

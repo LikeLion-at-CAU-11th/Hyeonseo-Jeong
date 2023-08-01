@@ -102,12 +102,13 @@ def get_post_all(request):
 def create_post(request):
     # 데이터는 주로 body
     body = json.loads(request.body.decode('utf-8'))
+    image_file = request.FILES.get('image')
 
     # ORM을 통해 새로운 데이터를 DB에 생성함
     new_post = Post.objects.create(
         writer = body['writer'],
         content = body['content'],
-        category = body['category']
+        category = body['category'],
     )
 
     # Response에서 보여질 데이터 내용을 Json 형태로 만듦
